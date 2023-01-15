@@ -95,7 +95,10 @@ impl eframe::App for TemplateApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         ctx.request_repaint();
         egui::CentralPanel::default().show(ctx, |ui| {
-            if let Ok(colors) = self.rx.recv() {
+            if let Ok(mut colors) = self.rx.recv() {
+                if let Ok(newer_colors) = self.rx.try_recv() {
+                    colors = newer_colors;
+                }
                 for (index, color) in colors.iter().enumerate() {
                     let circle = egui::Shape::Circle(eframe::epaint::CircleShape {
                         center: egui::Pos2 {
